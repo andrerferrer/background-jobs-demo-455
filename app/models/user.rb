@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   after_commit :async_update # create ou update
   after_create :send_confirmation_email # create
+  after_create :async_check_user # create
 
   private 
 
@@ -19,5 +20,9 @@ class User < ApplicationRecord
     
     # Assíncrono (background job)
     UpdateUserJob.perform_later(self)
+  end
+
+  def async_check_user
+    CheckUserJob.perform_later(self)
   end
 end
